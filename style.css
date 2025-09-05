@@ -1,0 +1,91 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 20px;
+}
+
+h1 {
+    color: #333;
+}
+
+#fileInput {
+    margin: 10px 0;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button {
+    padding: 8px 16px;
+    margin: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f0f0f0;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #e0e0e0;
+}
+
+button.active {
+    background-color: #3498db;
+    color: white;
+    border-color: #2980b9;
+}
+
+.canvas-container {
+    position: relative;
+    display: inline-block;
+    border: 1px solid #999;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#backgroundCanvas, #drawingCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+#backgroundCanvas {
+    background-color: #f9f9f9;
+}
+
+#drawingCanvas {
+    cursor: default;
+}
+
+.tools-container {
+    display: none;
+    margin-top: 10px;
+}
+
+.name-buttons {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.name-buttons button {
+    font-size: 14px;
+    padding: 5px 10px;
+}
+
+/* 추가된 스타일 */
+.custom-text-container {
+    margin: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#customTextInput {
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-right: 5px;
+}

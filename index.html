@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>인포유_미래전략</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.mjs" type="module"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>인포유_미래전략</h1>
+    <button id="homeButton">홈</button>
+    <input type="file" id="fileInput" accept=".jpg, .jpeg, .pdf">
+    <br>
+    <div class="tools-container">
+        <button id="undoButton">실행 취소</button>
+        <button id="penButton" class="active">펜</button>
+        <button id="checkButton">체크</button>
+        <input type="text" id="fileNameInput" placeholder="파일 이름 (선택 사항)">
+        <button id="saveButton">저장</button>
+    </div>
+    <br>
+    <div class="canvas-container">
+        <canvas id="backgroundCanvas"></canvas>
+        <canvas id="drawingCanvas"></canvas>
+    </div>
+
+    <div class="name-buttons" style="display: none;">
+        <hr>
+        <div class="custom-text-container">
+            <input type="text" id="customTextInput" placeholder="텍스트 입력">
+            <button id="applyTextButton">적용</button>
+        </div>
+        <hr>
+    </div>
+
+    <script src="script.js" type="module"></script>
+</body>
+</html>
