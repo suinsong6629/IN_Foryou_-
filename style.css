@@ -68,6 +68,7 @@ button.active {
     margin-right: 5px;
 }
 
+/* 동적으로 생성되는 캔버스 컨테이너에 대한 스타일 */
 #canvas-wrapper {
     display: flex;
     flex-direction: column;
@@ -83,12 +84,10 @@ button.active {
     margin-bottom: 20px;
     width: 100%;
     max-width: 800px; 
-    
-    /* NEW: Use aspect-ratio to control container dimensions based on PDF page ratio */
-    aspect-ratio: 210 / 297; /* A4 paper ratio (portrait) */
+    aspect-ratio: 210 / 297; /* A4 용지 비율 (세로) */
 }
 
-/* Make sure the canvases fill their container */
+/* 캔버스가 부모 컨테이너 크기에 맞춰지도록 설정 */
 .backgroundCanvas, .drawingCanvas {
     position: absolute;
     top: 0;

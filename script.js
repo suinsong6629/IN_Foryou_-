@@ -18,7 +18,7 @@ const applyTextButton = document.getElementById('applyTextButton');
 
 let currentTool = 'pen';
 let currentText = ''; 
-let history = []; 
+let history = {}; // 각 페이지의 변경사항을 저장할 객체
 let pageCanvases = []; 
 
 function setActiveButton(activeButton) {
@@ -32,11 +32,16 @@ function setActiveButton(activeButton) {
     }
 }
 
-function addDrawingListeners(drawingCanvas) {
+function addDrawingListeners(drawingCanvas, pageId) {
     let ctx = drawingCanvas.getContext('2d');
     let isDrawing = false;
     let lastX = 0;
     let lastY = 0;
+
+    function saveHistory() {
+        history[pageId] = history[pageId] || [];
+        history[pageId].push(drawingCanvas.toDataURL());
+    }
 
     function draw(e) {
         if (!isDrawing) return;
@@ -71,6 +76,7 @@ function addDrawingListeners(drawingCanvas) {
     drawingCanvas.addEventListener('mouseup', () => {
         if (currentTool === 'pen') {
             isDrawing = false;
+            saveHistory();
         }
     });
 
@@ -95,11 +101,13 @@ function addDrawingListeners(drawingCanvas) {
             ctx.lineTo(x, y + checkSize / 2);
             ctx.lineTo(x + checkSize / 2, y - checkSize / 2);
             ctx.stroke();
+            saveHistory();
         } else if (currentTool === 'text' && currentText) {
             ctx.font = '24px Arial';
             ctx.fillStyle = '#000000';
             ctx.globalCompositeOperation = 'source-over';
             ctx.fillText(currentText, x, y);
+            saveHistory();
         }
     });
 }
@@ -110,6 +118,7 @@ async function renderPDF(fileUrl) {
         const pdf = await loadingTask.promise;
         canvasWrapper.innerHTML = '';
         pageCanvases = [];
+        history = {};
 
         for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
             const page = await pdf.getPage(pageNum);
@@ -121,11 +130,8 @@ async function renderPDF(fileUrl) {
 
             const pageContainer = document.createElement('div');
             pageContainer.className = 'page-container';
+            pageContainer.dataset.pageId = `page-${pageNum}`;
             
-            // Remove manual height setting to let CSS handle aspect-ratio
-            // pageContainer.style.width = `${viewport.width}px`;
-            // pageContainer.style.height = `${viewport.height}px`;
-
             const backgroundCanvas = document.createElement('canvas');
             const drawingCanvas = document.createElement('canvas');
             backgroundCanvas.className = 'backgroundCanvas';
@@ -143,12 +149,15 @@ async function renderPDF(fileUrl) {
             };
             await page.render(renderContext).promise;
 
-            addDrawingListeners(drawingCanvas);
+            addDrawingListeners(drawingCanvas, `page-${pageNum}`);
             pageCanvases.push(drawingCanvas);
 
             pageContainer.appendChild(backgroundCanvas);
             pageContainer.appendChild(drawingCanvas);
             canvasWrapper.appendChild(pageContainer);
+            
+            // 초기 상태 저장
+            history[`page-${pageNum}`] = [drawingCanvas.toDataURL()];
         }
 
         toolsContainer.style.display = 'block';
@@ -165,25 +174,34 @@ function drawImageOnCanvas(image) {
     canvasWrapper.innerHTML = '';
     const pageContainer = document.createElement('div');
     pageContainer.className = 'page-container';
+    pageContainer.dataset.pageId = 'page-1';
+    
     const backgroundCanvas = document.createElement('canvas');
     const drawingCanvas = document.createElement('canvas');
     backgroundCanvas.className = 'backgroundCanvas';
     drawingCanvas.className = 'drawingCanvas';
+    
     const newWidth = image.width;
     const newHeight = image.height;
     backgroundCanvas.width = newWidth;
     backgroundCanvas.height = newHeight;
     drawingCanvas.width = newWidth;
     drawingCanvas.height = newHeight;
+    
     const bgCtx = backgroundCanvas.getContext('2d');
     bgCtx.drawImage(image, 0, 0, newWidth, newHeight);
-    addDrawingListeners(drawingCanvas);
+    
+    addDrawingListeners(drawingCanvas, 'page-1');
     pageCanvases = [drawingCanvas];
+    
     pageContainer.appendChild(backgroundCanvas);
     pageContainer.appendChild(drawingCanvas);
     canvasWrapper.appendChild(pageContainer);
+    
     toolsContainer.style.display = 'block';
     nameButtonsContainer.style.display = 'block';
+    
+    history['page-1'] = [drawingCanvas.toDataURL()];
 }
 
 fileInput.addEventListener('change', async (e) => {
@@ -235,7 +253,25 @@ applyTextButton.addEventListener('click', () => {
 });
 
 undoButton.addEventListener('click', () => {
-    alert('다중 페이지 undo 기능은 아직 지원하지 않습니다.');
+    // 모든 캔버스를 순회하며 undo를 적용
+    pageCanvases.forEach(canvas => {
+        const pageId = canvas.parentElement.dataset.pageId;
+        const ctx = canvas.getContext('2d');
+
+        if (history[pageId] && history[pageId].length > 1) {
+            history[pageId].pop();
+            const lastState = history[pageId][history[pageId].length - 1];
+            const img = new Image();
+            img.onload = function() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0);
+            };
+            img.src = lastState;
+        } else if (history[pageId] && history[pageId].length === 1) {
+            history[pageId].pop();
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+    });
 });
 
 saveButton.addEventListener('click', () => {
