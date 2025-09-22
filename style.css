@@ -34,27 +34,6 @@ button.active {
     border-color: #2980b9;
 }
 
-.canvas-container {
-    position: relative;
-    display: inline-block;
-    border: 1px solid #999;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-#backgroundCanvas, #drawingCanvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-}
-
-#backgroundCanvas {
-    background-color: #f9f9f9;
-}
-
-#drawingCanvas {
-    cursor: default;
-}
-
 .tools-container {
     display: none;
     margin-top: 10px;
@@ -75,7 +54,6 @@ button.active {
     padding: 5px 10px;
 }
 
-/* 추가된 스타일 */
 .custom-text-container {
     margin: 10px;
     display: flex;
@@ -88,4 +66,33 @@ button.active {
     border: 1px solid #ccc;
     border-radius: 4px;
     margin-right: 5px;
+}
+
+#canvas-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.page-container {
+    position: relative;
+    border: 1px solid #999;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    width: 100%;
+    max-width: 800px; 
+    
+    /* NEW: Use aspect-ratio to control container dimensions based on PDF page ratio */
+    aspect-ratio: 210 / 297; /* A4 paper ratio (portrait) */
+}
+
+/* Make sure the canvases fill their container */
+.backgroundCanvas, .drawingCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
 }
